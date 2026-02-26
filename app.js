@@ -15,6 +15,25 @@ const CATEGORIES = [
   'escalera', 'full', 'poker', 'generala'
 ];
 
+// Visual prefixes for category cards in round-input
+const CATEGORY_ICONS = {
+  ones:     '\u2680',   // ⚀
+  twos:     '\u2681',   // ⚁
+  threes:   '\u2682',   // ⚂
+  fours:    '\u2683',   // ⚃
+  fives:    '\u2684',   // ⚄
+  sixes:    '\u2685',   // ⚅
+  escalera: '\uD83D\uDCC8', // 📈
+  full:     '\uD83C\uDFE0', // 🏠
+  poker:    '\uD83C\uDCCF', // 🃏
+  generala: '\u2B50',        // ⭐
+  doubleGenerala: '\uD83C\uDF1F', // 🌟
+};
+
+// Numeric categories are "dice" group, the rest are "combo" group
+const DICE_CATEGORIES = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes'];
+const COMBO_CATEGORIES = ['escalera', 'full', 'poker', 'generala', 'doubleGenerala'];
+
 // Options for each category: [value, isFirstRollBonus?]
 // First-roll bonus values are the last element in arrays where applicable
 const CATEGORY_OPTIONS = {
@@ -260,6 +279,10 @@ const $app = () => document.getElementById('app');
 function render() {
   const app = $app();
   if (!app) return;
+
+  // Clean up floating confirm bar when leaving round-input
+  const existingBar = document.querySelector('.confirm-bar');
+  if (existingBar) existingBar.remove();
 
   const screens = {
     home: renderHome,
@@ -751,7 +774,8 @@ function renderRoundInput() {
   if (!game || !playerName) { navigate('game'); return h('div'); }
 
   const playerScores = game.scores[playerName];
-  const screen = h('div', { className: 'screen' });
+  const hasSelection = appState.selectedCategory !== null && appState.selectedValue !== null;
+  const screen = h('div', { className: `screen ${hasSelection ? 'has-confirm-bar' : ''}` });
 
   // Header
   screen.appendChild(h('div', { className: 'round-input-header' },
@@ -786,23 +810,35 @@ function renderRoundInput() {
   const categoryList = h('div', { className: 'category-list' });
 
   const allCats = getActiveCategories(game.settings);
+  let prevWasDice = false;
+
   for (const cat of allCats) {
     // Skip doubleGenerala if generala not already recorded
     if (cat === 'doubleGenerala') {
       if (playerScores.generala === null) continue;
     }
 
+    // Insert separator between dice (1-6) and combo categories
+    const isDice = DICE_CATEGORIES.includes(cat);
+    if (prevWasDice && !isDice) {
+      categoryList.appendChild(h('div', { className: 'category-separator' }));
+    }
+    prevWasDice = isDice;
+
     const isUsed = playerScores[cat] !== null && playerScores[cat] !== undefined;
     const isExpanded = appState.expandedCategory === cat;
     const isSelected = appState.selectedCategory === cat;
 
+    const cardClass = isDice ? 'category-card dice-card' : 'category-card combo-card';
     const card = h('div', {
-      className: `category-card ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''} ${isExpanded ? 'expanded' : ''}`,
+      className: `${cardClass} ${isUsed ? 'used' : ''} ${isSelected ? 'selected' : ''} ${isExpanded ? 'expanded' : ''}`,
     });
 
-    // Card header
+    // Card header — build display name with icon prefix
+    const icon = CATEGORY_ICONS[cat] || '';
     const catName = cat === 'doubleGenerala' ? t('doubleGeneralaName') : t(cat);
     const headerContent = [];
+    headerContent.push(h('span', { className: 'cat-icon' }, icon));
     headerContent.push(h('span', { className: 'name' }, catName));
     if (isUsed) {
       if (playerScores[cat] === 0) {
@@ -870,14 +906,19 @@ function renderRoundInput() {
   }
   screen.appendChild(categoryList);
 
-  // Confirm bar (sticky bottom)
-  if (appState.selectedCategory !== null && appState.selectedValue !== null) {
+  // Confirm bar — rendered outside screen into body to avoid transform containing block
+  // Clean up any existing confirm bar first
+  const existingBar = document.querySelector('.confirm-bar');
+  if (existingBar) existingBar.remove();
+
+  if (hasSelection) {
+    const selIcon = CATEGORY_ICONS[appState.selectedCategory] || '';
     const catName = appState.selectedCategory === 'doubleGenerala'
       ? t('doubleGeneralaName')
       : t(appState.selectedCategory);
     const confirmBar = h('div', { className: 'confirm-bar' },
       h('div', { className: 'confirm-preview' },
-        t('preview', catName, appState.selectedValue)
+        `${selIcon} ${t('preview', catName, appState.selectedValue)}`
       ),
       h('div', { className: 'confirm-actions' },
         h('button', {
@@ -894,7 +935,8 @@ function renderRoundInput() {
         }, t('confirm'))
       )
     );
-    screen.appendChild(confirmBar);
+    // Append to body, not inside the animated .screen
+    requestAnimationFrame(() => document.body.appendChild(confirmBar));
   }
 
   return screen;
