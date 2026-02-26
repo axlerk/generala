@@ -285,8 +285,8 @@ function h(tag, attrs = {}, ...children) {
     if (k === 'className') el.className = v;
     else if (k === 'onclick' || k === 'oninput' || k === 'onkeydown' || k === 'onchange') el[k] = v;
     else if (k === 'innerHTML') el.innerHTML = v;
-    else if (k === 'disabled' && v) el.disabled = true;
-    else if (k === 'checked' && v) el.checked = true;
+    else if (k === 'disabled') { el.disabled = !!v; continue; }
+    else if (k === 'checked') { el.checked = !!v; continue; }
     else if (k === 'type') el.type = v;
     else if (k === 'placeholder') el.placeholder = v;
     else if (k === 'value') el.value = v;
