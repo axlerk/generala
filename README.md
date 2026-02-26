@@ -37,7 +37,7 @@ npx serve .
 1. Создайте репозиторий на GitHub (например, `generala`)
 2. Добавьте remote и запушьте:
    ```bash
-   git remote add origin https://github.com/USERNAME/generala.git
+   git remote add origin https://github.com/axlerk/generala.git
    git branch -M main
    git push -u origin main
    ```
@@ -47,11 +47,11 @@ npx serve .
 6. Нажмите **Save**
 7. Через пару минут приложение будет доступно по адресу:
 
-   **https://USERNAME.github.io/generala/**
+   **https://axlerk.github.io/generala/**
 
 ## Демо
 
-[https://USERNAME.github.io/generala](https://USERNAME.github.io/generala)
+[https://axlerk.github.io/generala](https://axlerk.github.io/generala)
 
 ## Технологии
 
