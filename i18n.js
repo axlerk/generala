@@ -286,7 +286,7 @@ const TRANSLATIONS = {
 };
 
 // Current language (will be set from settings)
-let currentLanguage = 'ru';
+let currentLanguage = 'es';
 
 /**
  * Translation function with interpolation support.

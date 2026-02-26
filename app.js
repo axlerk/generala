@@ -32,7 +32,7 @@ const CATEGORY_OPTIONS = {
 
 // ── Default settings ─────────────────────────────────────────
 const DEFAULT_SETTINGS = {
-  language: 'ru',
+  language: 'es',
   autoWinOnGenerala: true,
   firstRollBonus: true,
   doubleGenerala: false,
@@ -310,7 +310,7 @@ function renderHome() {
 
   const screen = h('div', { className: 'screen home-screen' },
     // Top-right actions
-    h('div', { className: 'header-bar', style: 'position:absolute;top:20px;left:16px;right:16px;' },
+    h('div', { className: 'header-bar home-header-bar', style: 'position:absolute;top:20px;left:16px;right:16px;' },
       h('div'),
       h('div', { className: 'header-actions' },
         renderLangSwitchCompact(),
@@ -355,7 +355,7 @@ function renderHome() {
 }
 
 function renderLangSwitchCompact() {
-  const langs = ['RU', 'ES', 'EN'];
+  const langs = ['ES', 'EN', 'RU'];
   const div = h('div', { className: 'lang-switch-compact' });
   for (const lang of langs) {
     const code = lang.toLowerCase();
@@ -1206,7 +1206,7 @@ function renderSettings() {
   const langSection = h('div', { className: 'settings-section' });
   langSection.appendChild(h('h3', {}, t('languageSection')));
   const segmented = h('div', { className: 'segmented' });
-  for (const [code, label] of [['ru', 'RU'], ['es', 'ES'], ['en', 'EN']]) {
+  for (const [code, label] of [['es', 'ES'], ['en', 'EN'], ['ru', 'RU']]) {
     segmented.appendChild(h('button', {
       className: code === appState.settings.language ? 'active' : '',
       onclick: () => {

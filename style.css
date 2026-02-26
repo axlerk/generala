@@ -1191,4 +1191,10 @@ h3 {
     padding-top: calc(20px + env(safe-area-inset-top));
     padding-bottom: calc(40px + env(safe-area-inset-bottom));
   }
+  .home-header-bar {
+    top: calc(20px + env(safe-area-inset-top)) !important;
+  }
+  .home-screen {
+    padding-top: calc(60px + env(safe-area-inset-top));
+  }
 }
